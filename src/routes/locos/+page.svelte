@@ -38,7 +38,7 @@
 	let formHasCard = false;
 	let formUserId: string | null = null;
 
-	let hasDuplicateSerial = false;
+	let isDuplicateSerial = false;
 
 	function resetForm() {
 		formId = null;
@@ -118,7 +118,7 @@
 		value: user.id,
 		text: user.firstName + ' ' + user.lastName
 	}));
-	$: hasDuplicateSerial = checkForDuplicateSerial(formId);
+	$: isDuplicateSerial = checkForDuplicateSerial(formId);
 </script>
 
 <ContentHeaderNavbar title="Lokomotiven" category="Betriebswerk">
@@ -154,10 +154,10 @@
 			required
 			bind:value={formSerial}
 			on:input={() => {
-				hasDuplicateSerial = checkForDuplicateSerial(formId);
+				isDuplicateSerial = checkForDuplicateSerial(formId);
 			}}
 		/>
-		<LocoDuplicateSerialFormAlert show={hasDuplicateSerial} />
+		<LocoDuplicateSerialFormAlert show={isDuplicateSerial} />
 		<FormSelect
 			name="railwayGaugeId"
 			label="Spurweite"
@@ -187,11 +187,30 @@
 			<FormCheck name="hasCard" label="Lokkarte vorhanden?" value="1" checked={formHasCard} />
 		</div>
 		<div class="d-grid gap-2 d-flex justify-content-end">
-			<Button title="Abbrechen" color="dark" outline on:click={() => (showForm = false)} />
+			<Button title="Abbrechen" color="light" on:click={() => (showForm = false)} />
 			<Button type="submit" title={formModeEdit ? 'Speichern' : 'Hinzufügen'} color="dark" />
 		</div>
 	</form>
 </OffcanvasRight>
+
+<div class="modal fade" tabindex="-1" id="exampleModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Lokomotive löschen</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Möchtest du sicher die Lokomotive xxx löschen?</p>
+				<p>Beachte, dieser Vorgang kann nicht mehr rückgängig gemacht werden.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Abbrechen</button>
+				<button type="button" class="btn btn-danger">Löschen</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <DataTable>
 	<svelte:fragment slot="header">
