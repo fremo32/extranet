@@ -76,7 +76,14 @@
 	}
 
 	function checkForDuplicateSerial(id: string | null) {
-		const result = data.locos.find((l) => l.serial == formSerial);
+		if (formSerial == null || formSerial == '' || formRailwayCompanyId == null) {
+			return false;
+		}
+
+		const result = data.locos.find(
+			(l) => l.serial == formSerial && l.railwayCompanyId == formRailwayCompanyId
+		);
+
 		if (result !== undefined && result.id !== id) {
 			return true;
 		}
@@ -138,15 +145,11 @@
 			name="railwayCompanyId"
 			label="Eisenbahngesellschaft"
 			required
-			value={formRailwayCompanyId}
+			bind:value={formRailwayCompanyId}
 			options={railwayCompanyOptions}
-		/>
-		<FormSelect
-			name="locoClassId"
-			label="Baureihe"
-			required
-			value={formLocoClassId}
-			options={locoClassOptions}
+			on:change={() => {
+				isDuplicateSerial = checkForDuplicateSerial(formId);
+			}}
 		/>
 		<FormInput
 			name="serial"
@@ -158,6 +161,13 @@
 			}}
 		/>
 		<LocoDuplicateSerialFormAlert show={isDuplicateSerial} />
+		<FormSelect
+			name="locoClassId"
+			label="Baureihe"
+			required
+			value={formLocoClassId}
+			options={locoClassOptions}
+		/>
 		<FormSelect
 			name="railwayGaugeId"
 			label="Spurweite"

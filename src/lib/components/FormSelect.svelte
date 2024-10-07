@@ -5,7 +5,7 @@
 <script lang="ts">
 	export let label: string = '';
 	export let name: string;
-	export let value;
+	export let value: string | null | undefined;
 	export let required: boolean = false;
 	export let options: FormSelectOption[];
 
@@ -16,7 +16,7 @@
 	<label for={id} class="form-label"
 		>{label}{#if required}<span class="text-danger required-asterisk">*</span>{/if}</label
 	>
-	<select class="form-select" {id} {name} {value} {required}>
+	<select class="form-select" {id} {name} bind:value {required} on:input on:change>
 		{#each options as option}
 			<option value={option.value}>{option.text}</option>
 		{/each}
