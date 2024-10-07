@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1728112078252,
+      "tag": "0000_graceful_baron_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1728205136885,
+      "tag": "0001_lucky_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1728234486458,
+      "tag": "0002_empty_vulture",
+      "breakpoints": true
+    }
+  ]
+}

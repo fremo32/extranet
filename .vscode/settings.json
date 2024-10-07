@@ -1,5 +1,6 @@
 {
 	"gitlens.currentLine.enabled": false,
 	"gitlens.currentLine.pullRequests.enabled": false,
-	"gitlens.codeLens.enabled": false
+	"gitlens.codeLens.enabled": false,
+	"cSpell.words": ["Fredi"]
 }

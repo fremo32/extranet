@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+/*import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
 import type { LocoType, LocoClass } from './types';
 
@@ -32,4 +32,4 @@ export function createLocoClass(name:string, locoTypeId: number):void {
 	
   const stmt = db.prepare(sqlStmt);
   stmt.run({ name, locoTypeId });
-}
+}*/

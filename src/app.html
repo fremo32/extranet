@@ -4,9 +4,44 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 		%sveltekit.head%
+		<style>
+			:root {
+				--bs-border-radius: 4px;
+				--bs-border-radius-sm: 4px;
+			}
+
+			/*::-webkit-scrollbar {
+				opacity:1;
+     		background: transparent;
+			}
+
+			::-webkit-scrollbar:hover{
+    		opacity: 1;
+			}*/
+
+			body {
+  			/*background-color: var(--bs-tertiary-bg);*/
+				font-family: "IBM Plex Sans", Helvetica Neue, arial, sans-serif;
+				min-height: 100vh;
+        /*min-height: -webkit-fill-available;*/
+      }
+
+      html {
+        /*height: -webkit-fill-available;*/
+				height: 100vh;
+				/*-ms-overflow-style: none;  /* IE and Edge */
+ 				/*scrollbar-width: none;  /* Firefox */
+      }
+		</style>
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<div id="svelte">%sveltekit.body%</div>
+		<div id="app">%sveltekit.body%</div>
+		<script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
