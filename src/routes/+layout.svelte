@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 	import MainNav from '$lib/components/MainNav.svelte';
 </script>
 
