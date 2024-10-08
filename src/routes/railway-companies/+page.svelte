@@ -15,12 +15,15 @@
 	import DropdownButtonMenuItem from '$lib/components/DropdownButtonMenuItem.svelte';
 	import Badge from '$lib/components/Badge.svelte';
 	import BadgeColorFormSelect from '$lib/components/BadgeColorFormSelect.svelte';
+	import InfoModal from '$lib/components/InfoModal.svelte';
 
 	export let data: PageData;
 	export let form;
 
 	let railwayCompany: InsertRailwayCompanyParams | undefined;
 	let showOffcanvas: boolean = false;
+
+	let showInfoModalIsProtected = false;
 
 	$: editRailwayCompany = !!railwayCompany?.id;
 	$: ({ railwayCompanies } = data);
@@ -71,6 +74,13 @@
 	</form>
 </OffcanvasRight>
 
+<InfoModal bind:show={showInfoModalIsProtected} title="Eisenbahngesellschaft ist geschützt">
+	<p>
+		Die Eisenbahngesellschaft befindet sich im geschützten Modus, weil diese häufig verwendet wird.
+	</p>
+	<p>Beachte, du kannst diese Eisenbahngesellschaft weder bearbeiten noch löschen.</p>
+</InfoModal>
+
 <DataTable>
 	<svelte:fragment slot="header">
 		<DataTableHeader>Name</DataTableHeader>
@@ -83,25 +93,34 @@
 			<DataTableCell>{row.description}</DataTableCell>
 			<DataTableCell
 				><div class="d-grid gap-2 d-flex justify-content-end">
-					<ButtonGroup>
+					{#if row.isProtected == '0'}
+						<ButtonGroup>
+							<Button
+								icon="pencil"
+								color="warning"
+								small
+								on:click={() => {
+									showOffcanvas = true;
+									railwayCompany = {
+										id: row.id,
+										name: row.name,
+										description: row.description,
+										badgeColor: row.badgeColor
+									};
+								}}
+							/>
+							<DropdownButton group title="Aktionen">
+								<DropdownButtonMenuItem title="Löschen" icon="trash" />
+							</DropdownButton>
+						</ButtonGroup>
+					{:else}
 						<Button
-							icon="pencil"
-							color="warning"
+							icon="lock"
+							color="secondary"
 							small
-							on:click={() => {
-								showOffcanvas = true;
-								railwayCompany = {
-									id: row.id,
-									name: row.name,
-									description: row.description,
-									badgeColor: row.badgeColor
-								};
-							}}
+							on:click={() => (showInfoModalIsProtected = true)}
 						/>
-						<DropdownButton group title="Aktionen">
-							<DropdownButtonMenuItem title="Löschen" icon="trash" />
-						</DropdownButton>
-					</ButtonGroup>
+					{/if}
 				</div>
 			</DataTableCell>
 		</DataTableRow>

@@ -17,6 +17,9 @@
 		>{label}{#if required}<span class="text-danger required-asterisk">*</span>{/if}</label
 	>
 	<select class="form-select" {id} {name} bind:value {required} on:input on:change>
+		{#if required == false}
+			<option value={null}>-</option>
+		{/if}
 		{#each options as option}
 			<option value={option.value}>{option.text}</option>
 		{/each}

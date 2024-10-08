@@ -99,7 +99,7 @@
 				/></DataTableCell
 			>
 			<DataTableCell>{row.name}</DataTableCell>
-			<DataTableCell><Badge color="secondary" title={row.genre} /></DataTableCell>
+			<DataTableCell><Badge color="success" title={row.genre} /></DataTableCell>
 			<DataTableCell>{row.locoTypeName}</DataTableCell>
 			<DataTableCell
 				><div class="d-grid gap-2 d-flex justify-content-end">

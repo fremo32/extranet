@@ -2,12 +2,12 @@ import { db } from '$lib/server/db/client';
 import { railwayCompanies, type InsertRailwayCompanyParams } from '$lib/server/db/schema';
 import { asc, eq } from 'drizzle-orm';
 
-export type RailwayCompany = {
+/*export type RailwayCompany = {
 	id: number;
 	name: string;
 	description: string;
 	badgeColor: string;
-};
+};*/
 
 const createRailwayCompany = async (railwayCompany: InsertRailwayCompanyParams) => {
 	await db.insert(railwayCompanies).values(railwayCompany);

@@ -19,6 +19,9 @@
 	import FormTextArea from '$lib/components/FormTextArea.svelte';
 	import FormCheck from '$lib/components/FormCheck.svelte';
 	import LocoDuplicateSerialFormAlert from '$lib/components/LocoDuplicateSerialFormAlert.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+	import ModalBody from '$lib/components/ModalBody.svelte';
+	import ModalFooter from '$lib/components/ModalFooter.svelte';
 
 	export let data: PageData;
 	export let form;
@@ -37,8 +40,14 @@
 	let formHasFredi = false;
 	let formHasCard = false;
 	let formUserId: string | null = null;
+	let formDccAddress: string | null = null;
 
 	let isDuplicateSerial = false;
+
+	let showModal = false;
+	let modal: HTMLDialogElement;
+	let modalFormId: string | null = null;
+	let modalFormFullLocoName: string | null = null;
 
 	function resetForm() {
 		formId = null;
@@ -53,6 +62,7 @@
 		formHasFredi = false;
 		formHasCard = false;
 		formUserId = null;
+		formDccAddress = null;
 	}
 
 	function onEditLoco(id: string) {
@@ -71,8 +81,24 @@
 		formHasFredi = loco.hasFredi == '1' ? true : false;
 		formHasCard = loco.hasCard == '1' ? true : false;
 		formUserId = loco.userId;
+		formDccAddress = loco.dccAddress;
 
 		showForm = true;
+	}
+
+	function resetModalForm() {
+		modalFormId = null;
+		modalFormFullLocoName = null;
+	}
+
+	function onDeleteLoco(id: string) {
+		let loco = locos.find((loco) => loco.id == id);
+		if (loco == undefined) return;
+
+		modalFormId = loco.id;
+		modalFormFullLocoName = loco.railwayCompanyName + ' ' + loco.serial;
+
+		showModal = true;
 	}
 
 	function checkForDuplicateSerial(id: string | null) {
@@ -98,6 +124,9 @@
 	}
 	$: if (form?.success) {
 		showForm = false;
+	}
+	$: if (!showModal) {
+		resetModalForm();
 	}
 	$: railwayCompanyOptions = data.railwayCompanies.map((railwayCompany) => ({
 		value: railwayCompany.id,
@@ -177,14 +206,14 @@
 		/>
 		<LocoEpochFormCheck name="epoch" value={formEpoch} />
 		<FormTextArea name="notes" label="Hinweise" value={formNotes} />
+		<FormSelect name="userId" label="Besitzer" required value={formUserId} options={userOptions} />
+		<FormInput name="dccAddress" label="DCC-Adresse" bind:value={formDccAddress} />
 		<FormSelect
 			name="modelManufacturerId"
 			label="Hersteller"
-			required
 			value={formModelManufacturerId}
 			options={modelManufacturerOptions}
 		/>
-		<FormSelect name="userId" label="Besitzer" required value={formUserId} options={userOptions} />
 		<div class="form-label">Sonstiges</div>
 		<div class="pb-3">
 			<FormCheck
@@ -203,24 +232,21 @@
 	</form>
 </OffcanvasRight>
 
-<div class="modal fade" tabindex="-1" id="exampleModal">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Lokomotive löschen</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<p>Möchtest du sicher die Lokomotive xxx löschen?</p>
-				<p>Beachte, dieser Vorgang kann nicht mehr rückgängig gemacht werden.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Abbrechen</button>
-				<button type="button" class="btn btn-danger">Löschen</button>
-			</div>
-		</div>
-	</div>
-</div>
+<Modal bind:show={showModal} bind:dialog={modal} title="Lokomotive löschen">
+	<form method="post" action="?/deleteLoco" use:enhance>
+		<FormInput hidden name="id" value={modalFormId} />
+		<ModalBody>
+			<p>
+				Möchtest du sicher die Lokomotive <span class="fw-medium">{modalFormFullLocoName}</span> löschen?
+			</p>
+			<p>Beachte, dieser Vorgang kann nicht mehr rückgängig gemacht werden.</p>
+		</ModalBody>
+		<ModalFooter>
+			<Button title="Abbrechen" color="light" on:click={() => modal.close()} />
+			<Button type="submit" title="Löschen" color="danger" on:click={() => modal.close()} />
+		</ModalFooter>
+	</form>
+</Modal>
 
 <DataTable>
 	<svelte:fragment slot="header">
@@ -229,8 +255,9 @@
 		<DataTableHeader>Baureihe</DataTableHeader>
 		<DataTableHeader>Spurweite</DataTableHeader>
 		<DataTableHeader>Epoche</DataTableHeader>
-		<DataTableHeader>Hersteller</DataTableHeader>
 		<DataTableHeader>Besitzer</DataTableHeader>
+		<DataTableHeader>DCC-Adresse</DataTableHeader>
+		<DataTableHeader>Hersteller</DataTableHeader>
 		<DataTableHeader align="right">Aktionen</DataTableHeader>
 	</svelte:fragment>
 	{#each locos as row}
@@ -244,21 +271,26 @@
 			<DataTableCell>{row.serial}</DataTableCell>
 			<DataTableCell
 				>{row.locoClassName}
-				<Badge color="secondary" class="ms-1" title={row.locoClassGenre} /></DataTableCell
+				<Badge color="success" class="ms-1" title={row.locoClassGenre} /></DataTableCell
 			>
 			<DataTableCell
 				><Badge color={row.railwayGaugeBadgeColor} title={row.railwayGaugeName} /></DataTableCell
 			>
 			<DataTableCell><LocoEpochBadge epoch={row.epoch} /></DataTableCell>
-			<DataTableCell>{row.modelManufacturerName}</DataTableCell>
 			<DataTableCell>{row.userFirstName} {row.userLastName}</DataTableCell>
+			<DataTableCell>{row.dccAddress ?? '-'}</DataTableCell>
+			<DataTableCell>{row.modelManufacturerName ?? '-'}</DataTableCell>
 			<DataTableCell
 				><div class="d-grid gap-2 d-flex justify-content-end">
 					<Button icon="share" color="success" small />
 					<ButtonGroup>
 						<Button icon="pencil" color="warning" small on:click={() => onEditLoco(row.id)} />
 						<DropdownButton group title="Aktionen">
-							<DropdownButtonMenuItem title="Löschen" icon="trash" />
+							<DropdownButtonMenuItem
+								title="Löschen"
+								icon="trash"
+								on:click={() => onDeleteLoco(row.id)}
+							/>
 						</DropdownButton>
 					</ButtonGroup>
 				</div>

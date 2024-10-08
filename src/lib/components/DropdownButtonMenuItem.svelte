@@ -4,7 +4,7 @@
 </script>
 
 <li>
-	<a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#exampleModal">
+	<a class="dropdown-item" href="#!" on:click>
 		{#if icon !== null && icon !== undefined}<i class="bi bi-{icon}"></i>{/if}
 		{title}</a
 	>

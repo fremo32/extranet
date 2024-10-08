@@ -39,6 +39,7 @@ const fetchAllLocos = async () => {
 		userId: locos.userId,
 		userFirstName: users.firstName,
 		userLastName: users.lastName,
+		dccAddress: locos.dccAddress,
 		createdAt: locos.createdAt,
 		updatedAt: locos.updatedAt
 	})

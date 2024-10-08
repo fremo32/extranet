@@ -1,5 +1,5 @@
 import { fetchAllLocoClasses } from '$lib/server/db/loco-classes';
-import { fetchAllLocos, createLoco, updateLocoById } from '$lib/server/db/locos';
+import { fetchAllLocos, createLoco, updateLocoById, deleteLocoById } from '$lib/server/db/locos';
 import { fetchAllModelManufacturers } from '$lib/server/db/model-manufacturers';
 import { fetchAllRailwayCompanies } from '$lib/server/db/railway-companies';
 import { fetchAllRailwayGauges } from '$lib/server/db/railway-gauges';
@@ -38,7 +38,8 @@ export const actions:Actions = {
 			hasWeathering,
 			hasFredi,
 			hasCard,
-			userId } = Object.fromEntries(
+			userId,
+			dccAddress } = Object.fromEntries(
 			await request.formData()
 		) as {
 			railwayCompanyId: string;
@@ -47,11 +48,12 @@ export const actions:Actions = {
 			epoch: string;
 			railwayGaugeId: string;
 			notes: string;
-			modelManufacturerId: string;
+			modelManufacturerId: string | null;
 			hasWeathering: string;
 			hasFredi: string;
 			hasCard: string;
 			userId: string;
+			dccAddress: string;
 		};
 
 		await createLoco({
@@ -61,11 +63,12 @@ export const actions:Actions = {
 			epoch,
 			railwayGaugeId,
 			notes,
-			modelManufacturerId,
-			hasWeathering,
-			hasFredi,
-			hasCard,
-			userId
+			modelManufacturerId: (modelManufacturerId == undefined || modelManufacturerId.trim() == '') ? null : modelManufacturerId,
+			hasWeathering: (hasWeathering == undefined || hasWeathering == null) ? '0' : '1',
+			hasFredi: (hasFredi == undefined || hasFredi == null) ? '0' : '1',
+			hasCard: (hasCard == undefined || hasCard == null) ? '0' : '1',
+			userId,
+			dccAddress: (dccAddress == undefined || dccAddress.trim() == '') ? null : dccAddress,
 		});
 
 		return {success:true};
@@ -83,7 +86,8 @@ export const actions:Actions = {
 			hasWeathering,
 			hasFredi,
 			hasCard,
-			userId } = Object.fromEntries(
+			userId,
+			dccAddress } = Object.fromEntries(
 			await request.formData()
 		) as {
 			id: string;
@@ -93,11 +97,12 @@ export const actions:Actions = {
 			epoch: string;
 			railwayGaugeId: string;
 			notes: string;
-			modelManufacturerId: string;
+			modelManufacturerId: string | null;
 			hasWeathering: string;
 			hasFredi: string;
 			hasCard: string;
 			userId: string;
+			dccAddress: string;
 		};
 
 		await updateLocoById({
@@ -108,12 +113,22 @@ export const actions:Actions = {
 			epoch,
 			railwayGaugeId,
 			notes,
-			modelManufacturerId,
+			modelManufacturerId: (modelManufacturerId == undefined || modelManufacturerId.trim() == '') ? null : modelManufacturerId,
 			hasWeathering: (hasWeathering == undefined || hasWeathering == null) ? '0' : '1',
 			hasFredi: (hasFredi == undefined || hasFredi == null) ? '0' : '1',
 			hasCard: (hasCard == undefined || hasCard == null) ? '0' : '1',
-			userId
+			userId,
+			dccAddress: (dccAddress == undefined || dccAddress.trim() == '') ? null : dccAddress,
     });
+
+    return {success:true};
+	},
+	async deleteLoco({ request }) {
+		const { id } = Object.fromEntries(
+			await request.formData()
+		) as { id: string; };
+
+		await deleteLocoById(id);
 
     return {success:true};
 	}

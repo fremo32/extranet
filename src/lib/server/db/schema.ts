@@ -21,7 +21,8 @@ const railwayCompanies = sqliteTable('railway_companies', {
     .notNull()
     .unique(),
 	description: text('description'),
-	badgeColor: text('badge_color')
+	badgeColor: text('badge_color'),
+	isProtected: numeric('is_protected').notNull().default('0')
 });
 
 type InsertRailwayCompanyParams = typeof railwayCompanies.$inferInsert;
@@ -133,8 +134,7 @@ const locos = sqliteTable('locos', {
 		.notNull()
 		.references(() => locoClasses.id),
 	serial: text('serial')
-    .notNull()
-		.unique(),
+    .notNull(),
 	epoch: text('epoch'),
 	railwayGaugeId: text("railway_gauge_id")
 		.notNull()
@@ -147,6 +147,7 @@ const locos = sqliteTable('locos', {
 	hasCard: numeric('has_card').notNull().default('0'),
 	userId: text("user_id")
 		.references(() => users.id),
+	dccAddress: text('dcc_address')
 });
 
 type InsertLocoParams = typeof locos.$inferInsert;
