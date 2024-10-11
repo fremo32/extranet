@@ -17,8 +17,8 @@
 	class="btn {btnStyleClass} {className}"
 	class:px-4={wide}
 	class:btn-sm={small}
-	on:click
+	on:click|stopPropagation
 >
-	{#if icon}<i class="bi bi-{icon}"></i>{/if}
+	{#if icon}<i class="bi bi-{icon}" class:me-2={title !== ''}></i>{/if}
 	{title}</button
 >

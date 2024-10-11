@@ -1,5 +1,7 @@
 import { fetchAllLocoClasses } from '$lib/server/db/loco-classes';
 import { fetchAllLocos, createLoco, updateLocoById, deleteLocoById } from '$lib/server/db/locos';
+import { createMeetingLocoRegistration } from '$lib/server/db/meeting-loco-registrations';
+import { fetchAllMeetings } from '$lib/server/db/meetings';
 import { fetchAllModelManufacturers } from '$lib/server/db/model-manufacturers';
 import { fetchAllRailwayCompanies } from '$lib/server/db/railway-companies';
 import { fetchAllRailwayGauges } from '$lib/server/db/railway-gauges';
@@ -14,6 +16,7 @@ export const load = (async () => {
 	const railwayGauges = await fetchAllRailwayGauges();
 	const modelManufacturers = await fetchAllModelManufacturers();
 	const users = await fetchAllUsers();
+	const meetings = await fetchAllMeetings();
 
 	return {
 		locos,
@@ -21,7 +24,8 @@ export const load = (async () => {
 		locoClasses,
 		railwayGauges,
 		modelManufacturers,
-		users
+		users,
+		meetings
 	};
 }) satisfies PageServerLoad;
 
@@ -129,6 +133,36 @@ export const actions:Actions = {
 		) as { id: string; };
 
 		await deleteLocoById(id);
+
+    return {success:true};
+	},
+	async registerLoco({ request }) {
+		const { 
+			locoId, 
+			meetingId,
+			locoSerial,
+			locoDccAddress,
+			locoOwner,
+			notes
+		} = Object.fromEntries(
+			await request.formData()
+		) as { 
+			locoId: string; 
+			meetingId: string; 
+			locoSerial: string;
+			locoDccAddress: string | null;
+			locoOwner: string | null;
+			notes: string | null;
+		};
+
+		await createMeetingLocoRegistration({
+			locoId,
+			meetingId,
+			locoSerial,
+			locoDccAddress,
+			locoOwner,
+			notes
+		});
 
     return {success:true};
 	}

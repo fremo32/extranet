@@ -53,9 +53,9 @@
 						>Mitglieder</a
 					>
 				</li>
-				<li class="nav-item">
+				<!-- <li class="nav-item">
 					<a href="#!" class="nav-link disabled" aria-disabled="true">Module</a>
-				</li>
+				</li> -->
 				<li class="nav-item">
 					<a
 						href="/loco-classes"

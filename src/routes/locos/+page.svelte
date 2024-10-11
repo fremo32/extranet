@@ -44,10 +44,19 @@
 
 	let isDuplicateSerial = false;
 
-	let showModal = false;
-	let modal: HTMLDialogElement;
-	let modalFormId: string | null = null;
-	let modalFormFullLocoName: string | null = null;
+	let showModalDelete = false;
+	let modalDelete: HTMLDialogElement;
+	let modalDeleteFormId: string | null = null;
+	let modalDeleteFormFullLocoName: string | null = null;
+
+	let showModalRegister = false;
+	let modalRegister: HTMLDialogElement;
+	let modalRegisterFormLocoId: string | null = null;
+	let modalRegisterFormMeetingId: string | null = null;
+	let modalRegisterFormLocoSerial: string | null = null;
+	let modalRegisterFormLocoDccAddress: string | null = null;
+	let modalRegisterFormLocoOwner: string | null = null;
+	let modalRegisterFormNotes: string | null = null;
 
 	function resetForm() {
 		formId = null;
@@ -86,19 +95,45 @@
 		showForm = true;
 	}
 
-	function resetModalForm() {
-		modalFormId = null;
-		modalFormFullLocoName = null;
+	function resetModalDeleteForm() {
+		modalDeleteFormId = null;
+		modalDeleteFormFullLocoName = null;
+	}
+
+	function resetModalRegisterForm() {
+		modalRegisterFormLocoId = null;
+		modalRegisterFormMeetingId = null;
+		modalRegisterFormLocoSerial = null;
+		modalRegisterFormLocoDccAddress = null;
+		modalRegisterFormLocoOwner = null;
+		modalRegisterFormNotes = null;
 	}
 
 	function onDeleteLoco(id: string) {
 		let loco = locos.find((loco) => loco.id == id);
 		if (loco == undefined) return;
 
-		modalFormId = loco.id;
-		modalFormFullLocoName = loco.railwayCompanyName + ' ' + loco.serial;
+		modalDeleteFormId = loco.id;
+		modalDeleteFormFullLocoName = loco.railwayCompanyName + ' ' + loco.serial;
 
-		showModal = true;
+		showModalDelete = true;
+	}
+
+	function onRegisterLoco(id: string) {
+		let loco = locos.find((loco) => loco.id == id);
+		if (loco == undefined) return;
+
+		modalRegisterFormLocoId = loco.id;
+		modalRegisterFormLocoSerial = loco.serial;
+		modalRegisterFormLocoDccAddress = loco.dccAddress;
+		modalRegisterFormLocoOwner =
+			(loco.userFirstName !== undefined &&
+			loco.userFirstName !== null &&
+			loco.userFirstName.trim() !== ''
+				? loco.userFirstName + ' '
+				: '') + loco.userLastName;
+
+		showModalRegister = true;
 	}
 
 	function checkForDuplicateSerial(id: string | null) {
@@ -125,9 +160,14 @@
 	$: if (form?.success) {
 		showForm = false;
 	}
-	$: if (!showModal) {
-		resetModalForm();
+
+	$: if (!showModalDelete) {
+		resetModalDeleteForm();
 	}
+	$: if (!showModalRegister) {
+		resetModalRegisterForm();
+	}
+
 	$: railwayCompanyOptions = data.railwayCompanies.map((railwayCompany) => ({
 		value: railwayCompany.id,
 		text: railwayCompany.name
@@ -153,6 +193,10 @@
 	$: userOptions = data.users.map((user) => ({
 		value: user.id,
 		text: user.firstName + ' ' + user.lastName
+	}));
+	$: meetingOptions = data.meetings.map((meeting) => ({
+		value: meeting.id,
+		text: meeting.title
 	}));
 	$: isDuplicateSerial = checkForDuplicateSerial(formId);
 </script>
@@ -232,18 +276,43 @@
 	</form>
 </OffcanvasRight>
 
-<Modal bind:show={showModal} bind:dialog={modal} title="Lokomotive löschen">
+<Modal bind:show={showModalDelete} bind:dialog={modalDelete} title="Lokomotive löschen">
 	<form method="post" action="?/deleteLoco" use:enhance>
-		<FormInput hidden name="id" value={modalFormId} />
+		<FormInput hidden name="id" value={modalDeleteFormId} />
 		<ModalBody>
 			<p>
-				Möchtest du sicher die Lokomotive <span class="fw-medium">{modalFormFullLocoName}</span> löschen?
+				Möchtest du sicher die Lokomotive <span class="fw-medium"
+					>{modalDeleteFormFullLocoName}</span
+				> löschen?
 			</p>
 			<p>Beachte, dieser Vorgang kann nicht mehr rückgängig gemacht werden.</p>
 		</ModalBody>
 		<ModalFooter>
-			<Button title="Abbrechen" color="light" on:click={() => modal.close()} />
-			<Button type="submit" title="Löschen" color="danger" on:click={() => modal.close()} />
+			<Button title="Abbrechen" color="light" on:click={() => modalDelete.close()} />
+			<Button type="submit" title="Löschen" color="danger" on:click={() => modalDelete.close()} />
+		</ModalFooter>
+	</form>
+</Modal>
+
+<Modal bind:show={showModalRegister} bind:dialog={modalRegister} title="Lokomotive anmelden">
+	<form method="post" action="?/registerLoco" use:enhance>
+		<FormInput hidden name="locoId" value={modalRegisterFormLocoId} />
+		<FormInput hidden name="locoSerial" value={modalRegisterFormLocoSerial} />
+		<FormInput hidden name="locoDccAddress" value={modalRegisterFormLocoDccAddress} />
+		<FormInput hidden name="locoOwner" value={modalRegisterFormLocoOwner} />
+		<ModalBody>
+			<FormSelect
+				name="meetingId"
+				label="Fahrplantreffen"
+				required
+				value={modalRegisterFormMeetingId}
+				options={meetingOptions}
+			/>
+			<FormTextArea name="notes" label="Optionale Hinweise" value={modalRegisterFormNotes} />
+		</ModalBody>
+		<ModalFooter>
+			<Button title="Abbrechen" color="light" on:click={() => modalRegister.close()} />
+			<Button type="submit" title="Anmelden" color="dark" on:click={() => modalRegister.close()} />
 		</ModalFooter>
 	</form>
 </Modal>
@@ -282,7 +351,7 @@
 			<DataTableCell>{row.modelManufacturerName ?? '-'}</DataTableCell>
 			<DataTableCell
 				><div class="d-grid gap-2 d-flex justify-content-end">
-					<Button icon="share" color="success" small />
+					<Button icon="share" color="success" small on:click={() => onRegisterLoco(row.id)} />
 					<ButtonGroup>
 						<Button icon="pencil" color="warning" small on:click={() => onEditLoco(row.id)} />
 						<DropdownButton group title="Aktionen">

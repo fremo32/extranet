@@ -153,3 +153,67 @@ const locos = sqliteTable('locos', {
 type InsertLocoParams = typeof locos.$inferInsert;
 
 export { locos, type InsertLocoParams };
+
+// meetings
+
+const meetings = sqliteTable('meetings', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => uuid()),
+	...timestamp,
+	title: text('name')
+    .notNull(),
+	startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
+	endDate: integer('endDate', { mode: 'timestamp' }).notNull(),
+});
+
+type InsertMeetingParams = typeof meetings.$inferInsert;
+
+export { meetings, type InsertMeetingParams };
+
+// meeting_loco_turnarounds
+
+const meetingLocoTurnarounds = sqliteTable('meeting_loco_turnarounds', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => uuid()),
+	...timestamp,
+	meetingId: text("meeting_id")
+		.notNull()
+		.references(() => meetings.id),
+	name: text('name')
+    .notNull()
+		.unique(),
+	locoClasses: text('loco_class'),
+	startPosition: text('start_position'),
+	trainNumber: text('train_number')
+});
+
+type InsertMeetingLocoTurnaroundParams = typeof meetingLocoTurnarounds.$inferInsert;
+
+export { meetingLocoTurnarounds, type InsertMeetingLocoTurnaroundParams };
+
+// meeting_loco_registrations
+
+const meetingLocoRegistrations = sqliteTable('meeting_loco_registrations', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => uuid()),
+	...timestamp,
+	meetingId: text("meeting_id")
+		.notNull()
+		.references(() => meetings.id),
+	locoId: text("loco_id")
+		.references(() => locos.id),
+	locoSerial: text('loco_serial').notNull(),
+	locoDccAddress: text('loco_dcc_address'),
+	locoOwner: text('loco_user_full_name'), // TODO: Rename column
+	notes: text('notes'),
+});
+
+type InsertMeetingLocoRegistrationParams = typeof meetingLocoRegistrations.$inferInsert;
+
+export { meetingLocoRegistrations, type InsertMeetingLocoRegistrationParams };

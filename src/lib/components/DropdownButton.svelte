@@ -9,6 +9,7 @@
 		class="btn btn-sm btn-warning dropdown-toggle dropdown-toggle-split"
 		data-bs-toggle="dropdown"
 		aria-expanded="false"
+		on:click|stopPropagation
 	>
 		<span class="visually-hidden">Toggle Dropdown</span>
 	</button>
@@ -22,6 +23,7 @@
 			class="btn btn-sm btn-warning dropdown-toggle dropdown-toggle-split"
 			data-bs-toggle="dropdown"
 			aria-expanded="false"
+			on:click|stopPropagation
 		>
 			{#if title === undefined || title === null}
 				<span class="visually-hidden">Toggle Dropdown</span>

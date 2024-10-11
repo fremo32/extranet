@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let type: 'text' | 'password' = 'text';
+	export let type: 'text' | 'password' | 'date' | 'number' = 'text';
 	export let label: string = '';
 	export let name: string;
 	export let value: string | null | undefined;

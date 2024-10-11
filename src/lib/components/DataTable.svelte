@@ -15,7 +15,10 @@
 </table>
 
 <style>
-	table {
+	.table {
 		--bs-table-bg: var(--bs-tertiary-bg);
+	}
+	.table {
+		--bs-table-hover-bg: var(--bs-body-bg);
 	}
 </style>
